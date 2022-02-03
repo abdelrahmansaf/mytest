@@ -1,13 +1,9 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+name: Build and deploy Node.js
 
-name: Build and deploy Node.js app to Azure Web App - tetstestmytest
+on: [push]
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
+env:
+  AZURE_WEBAPP_NAME: FaultCodeMgt-API-Admin
 
 jobs:
   build:
@@ -25,8 +21,8 @@ jobs:
         run: |
           npm install
           npm run build --prod
-      
-      
+
+
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
@@ -34,7 +30,7 @@ jobs:
           path: .
 
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
@@ -50,7 +46,7 @@ jobs:
         uses: azure/webapps-deploy@v2
         id: deploy-to-webapp
         with:
-          app-name: 'tetstestmytest'
+          app-name: ${{env.AZURE_WEBAPP_NAME}}
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_35FA3F025A27448A9DAB234B7D6116F2 }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_TOKENS }}
           package: .
